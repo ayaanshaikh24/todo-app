@@ -3,7 +3,8 @@ import { useTodos } from './hooks/useTodos';
 import { TodoInput } from './components/TodoInput';
 import { TodoStats } from './components/TodoStats';
 import { TodoList } from './components/TodoList';
-import { CheckSquare, Sparkles, X, Lightbulb } from 'lucide-react';
+import { CheckSquare, Sparkles, X, Lightbulb, RotateCw } from 'lucide-react';
+import { getRandomQuote, Quote } from './utils/quotes';
 
 export default function App() {
   const {
@@ -27,6 +28,12 @@ export default function App() {
     clearAllFilters
   } = useTodos();
 
+  const [quote, setQuote] = useState<Quote>(getRandomQuote);
+
+  const handleRefreshQuote = () => {
+    setQuote(getRandomQuote());
+  };
+
   const [showTips, setShowTips] = useState(() => {
     try {
       return localStorage.getItem('focuslist_show_tips') !== 'false';
@@ -48,7 +55,7 @@ export default function App() {
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-start">
       <div className="w-full max-w-2xl animate-fade-in">
         {/* App Header */}
-        <div className="text-center mb-8 flex items-center justify-center gap-3">
+        <div className="text-center mb-6 flex items-center justify-center gap-3">
           <div className="bg-indigo-600 p-2.5 rounded-2xl text-white shadow-lg shadow-indigo-600/30 flex items-center justify-center transition-transform hover:scale-105">
             <CheckSquare size={28} strokeWidth={2.5} />
           </div>
@@ -60,6 +67,25 @@ export default function App() {
               Premium Todo Dashboard
             </p>
           </div>
+        </div>
+
+        {/* Motivational Quote Section */}
+        <div className="mb-6 px-4.5 py-3 bg-white/40 dark:bg-slate-900/40 border border-slate-100/50 dark:border-slate-800/40 rounded-2xl flex items-center justify-between gap-4 transition-all hover:bg-white/60 dark:hover:bg-slate-900/60 shadow-sm animate-fade-in">
+          <div className="text-left min-w-0">
+            <p className="text-xs italic text-slate-600 dark:text-slate-300 leading-relaxed break-words">
+              "{quote.text}"
+            </p>
+            <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 mt-1 uppercase tracking-wider select-none">
+              — {quote.author}
+            </p>
+          </div>
+          <button
+            onClick={handleRefreshQuote}
+            title="Get a new quote"
+            className="flex-shrink-0 p-2 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/20 rounded-xl transition-all cursor-pointer"
+          >
+            <RotateCw size={13} className="hover:rotate-180 transition-transform duration-300" />
+          </button>
         </div>
 
         {/* Dismissible Tips Guide */}
