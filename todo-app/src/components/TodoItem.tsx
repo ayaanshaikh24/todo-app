@@ -7,9 +7,18 @@ interface TodoItemProps {
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
   onEdit: (id: string, text: string, category: string, priority: Priority) => void;
+  onCategoryClick?: (category: string) => void;
+  onPriorityClick?: (priority: Priority) => void;
 }
 
-export function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
+export function TodoItem({
+  todo,
+  onToggle,
+  onDelete,
+  onEdit,
+  onCategoryClick,
+  onPriorityClick
+}: TodoItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(todo.text);
   const [editCategory, setEditCategory] = useState(todo.category);
@@ -44,26 +53,26 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
   const getPriorityStyles = (p: Priority) => {
     switch (p) {
       case 'high':
-        return 'bg-rose-50 text-rose-700 border-rose-100 dark:bg-rose-950/30 dark:text-rose-400 dark:border-rose-900/50';
+        return 'bg-rose-50 text-rose-700 border-rose-100 dark:bg-rose-950/30 dark:text-rose-400 dark:border-rose-900/50 hover:bg-rose-100 dark:hover:bg-rose-900/40';
       case 'medium':
-        return 'bg-amber-50 text-amber-700 border-amber-100 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-900/50';
+        return 'bg-amber-50 text-amber-700 border-amber-100 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-900/50 hover:bg-amber-100 dark:hover:bg-amber-900/40';
       default:
-        return 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-950/30 dark:text-blue-400 dark:border-blue-900/50';
+        return 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-950/30 dark:text-blue-400 dark:border-blue-900/50 hover:bg-blue-100 dark:hover:bg-blue-900/40';
     }
   };
 
   const getCategoryStyles = (cat: string) => {
     const norm = cat.toLowerCase();
     if (norm.includes('work')) {
-      return 'bg-indigo-50 text-indigo-700 border-indigo-100 dark:bg-indigo-950/30 dark:text-indigo-400 dark:border-indigo-900/50';
+      return 'bg-indigo-50 text-indigo-700 border-indigo-100 dark:bg-indigo-950/30 dark:text-indigo-400 dark:border-indigo-900/50 hover:bg-indigo-100 dark:hover:bg-indigo-900/40';
     } else if (norm.includes('personal')) {
-      return 'bg-purple-50 text-purple-700 border-purple-100 dark:bg-purple-950/30 dark:text-purple-400 dark:border-purple-900/50';
+      return 'bg-purple-50 text-purple-700 border-purple-100 dark:bg-purple-950/30 dark:text-purple-400 dark:border-purple-900/50 hover:bg-purple-100 dark:hover:bg-purple-900/40';
     } else if (norm.includes('health') || norm.includes('fit')) {
-      return 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900/50';
+      return 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/40';
     } else if (norm.includes('shop')) {
-      return 'bg-pink-50 text-pink-700 border-pink-100 dark:bg-pink-950/30 dark:text-pink-400 dark:border-pink-900/50';
+      return 'bg-pink-50 text-pink-700 border-pink-100 dark:bg-pink-950/30 dark:text-pink-400 dark:border-pink-900/50 hover:bg-pink-100 dark:hover:bg-pink-900/40';
     }
-    return 'bg-slate-50 text-slate-700 border-slate-100 dark:bg-slate-800/50 dark:text-slate-400 dark:border-slate-700/50';
+    return 'bg-slate-50 text-slate-700 border-slate-100 dark:bg-slate-800/50 dark:text-slate-400 dark:border-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-850';
   };
 
   return (
@@ -155,18 +164,32 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
               </p>
               
               <div className="flex flex-wrap gap-2 mt-2 items-center">
-                {/* Category tag */}
-                <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border uppercase tracking-wider ${getCategoryStyles(todo.category)}`}>
+                {/* Clickable Category tag */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onCategoryClick?.(todo.category);
+                  }}
+                  title={`Filter by category: ${todo.category}`}
+                  className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border uppercase tracking-wider transition-all hover:scale-105 active:scale-95 cursor-pointer ${getCategoryStyles(todo.category)}`}
+                >
                   {todo.category}
-                </span>
+                </button>
 
-                {/* Priority tag */}
-                <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border uppercase tracking-wider ${getPriorityStyles(todo.priority)}`}>
+                {/* Clickable Priority tag */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onPriorityClick?.(todo.priority);
+                  }}
+                  title={`Filter by priority: ${todo.priority}`}
+                  className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border uppercase tracking-wider transition-all hover:scale-105 active:scale-95 cursor-pointer ${getPriorityStyles(todo.priority)}`}
+                >
                   {todo.priority}
-                </span>
+                </button>
                 
                 {/* Time created */}
-                <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">
+                <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium select-none">
                   {new Date(todo.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>
